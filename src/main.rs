@@ -6,10 +6,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let graph = Graph::new(uri).await?;
 
     let mut result = graph.execute(query("RETURN 1+1")).await?;
-    let row = result.next().await.unwrap()?;
-    let value: i64 = row.get("1+1").unwrap();
-
-    println!("Result of 1+1: {}", value);
+    if let Some(row) = result.next().await {
+        let row = row?;
+        let value: i64 = row.get("1+1").unwrap();
+        println!("Result of 1+1: {}", value);
+    } else {
+        println!("No results returned from the query.");
+    }
 
     Ok(())
 }
