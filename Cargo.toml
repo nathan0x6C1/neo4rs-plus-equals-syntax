@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 neo4rs = "0.7.1"
+tokio = { version = "1.28.0", features = ["full"] }
