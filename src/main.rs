@@ -16,11 +16,11 @@ struct TestProps {
 impl From<TestInput> for BoltType {
     fn from(input: TestInput) -> Self {
         let mut map = BoltMap::new();
-        map.put("id", BoltType::Integer(BoltInteger::from(input.id)));
-        map.put("props", BoltType::Map({
+        map.put(BoltString::from("id"), BoltType::Integer(BoltInteger::from(input.id)));
+        map.put(BoltString::from("props"), BoltType::Map({
             let mut props_map = BoltMap::new();
-            props_map.put("name", BoltType::String(BoltString::from(input.props.name)));
-            props_map.put("value", BoltType::Integer(BoltInteger::from(input.props.value)));
+            props_map.put(BoltString::from("name"), BoltType::String(BoltString::from(input.props.name)));
+            props_map.put(BoltString::from("value"), BoltType::Integer(BoltInteger::from(input.props.value)));
             props_map
         }));
         BoltType::Map(map)
@@ -52,21 +52,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         TestInput {
             id: 9101,
             props: TestProps {
-                name: "Example3".to_string(),
+                name: "EEEEExample3".to_string(),
                 value: 15,
             },
         },
     ];
 
     let q = "
-    UNWIND $whatever as elt
+    UNWIND $listoftestinput as elt
     MERGE (t:Test {id: elt.id})
     SET t += elt.props
     RETURN t;
     ";
 
     let bolt_inputs: Vec<BoltType> = test_inputs.into_iter().map(|input| input.into()).collect();
-    let mut result = graph.execute(Query::new(q.to_string()).param("whatever", bolt_inputs)).await?;
+    let mut result = graph.execute(Query::new(q.to_string()).param("listoftestinput", bolt_inputs)).await?;
 
     while let Ok(Some(row)) = result.next().await {
         let node: Node = row.get("t")?;
