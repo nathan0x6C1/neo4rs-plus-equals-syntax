@@ -1,5 +1,6 @@
-use neo4rs::{Graph, Node, Query};
+use neo4rs::{Graph, Node, Query, BoltType};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct TestInput {
@@ -11,6 +12,20 @@ struct TestInput {
 struct TestProps {
     name: String,
     value: i64,
+}
+
+impl From<TestInput> for BoltType {
+    fn from(input: TestInput) -> Self {
+        let mut map = HashMap::new();
+        map.insert("id".to_string(), BoltType::Integer(input.id));
+        map.insert("props".to_string(), BoltType::Map({
+            let mut props_map = HashMap::new();
+            props_map.insert("name".to_string(), BoltType::String(input.props.name));
+            props_map.insert("value".to_string(), BoltType::Integer(input.props.value));
+            props_map
+        }));
+        BoltType::Map(map)
+    }
 }
 
 #[tokio::main]
@@ -51,8 +66,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     RETURN t;
     ";
 
-    let mut result = graph.execute(Query::new(q.to_string()).param("whatever", &test_inputs)).await?;
-    // let mut result = graph.execute(neo4rs::query(q).param("whatever", &test_inputs)).await?;
+    let bolt_inputs: Vec<BoltType> = test_inputs.into_iter().map(|input| input.into()).collect();
+    let mut result = graph.execute(Query::new(q.to_string()).param("whatever", bolt_inputs)).await?;
 
     while let Ok(Some(row)) = result.next().await {
         let node: Node = row.get("t")?;

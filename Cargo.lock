@@ -509,6 +509,7 @@ name = "plusequals"
 version = "0.1.0"
 dependencies = [
  "neo4rs",
+ "serde",
  "tokio",
 ]
 
