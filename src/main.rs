@@ -51,7 +51,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     RETURN t;
     ";
 
-    let mut result = graph.execute(Query::new(q).param("whatever", &test_inputs)).await?;
+    let mut result = graph.execute(Query::new(q.to_string()).param("whatever", &test_inputs)).await?;
+    // let mut result = graph.execute(neo4rs::query(q).param("whatever", &test_inputs)).await?;
 
     while let Ok(Some(row)) = result.next().await {
         let node: Node = row.get("t")?;
