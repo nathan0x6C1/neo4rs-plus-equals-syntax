@@ -70,7 +70,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     while let Ok(Some(row)) = result.next().await {
         let node: Node = row.get("t")?;
-        println!("Created/Updated Test node: {:?}", node);
+        // println!("Created/Updated Test node: {:?}", node);
+        let id: i64 = node.get("id").unwrap();
+        let name: String = node.get("name").unwrap();
+        let value: i64 = node.get("value").unwrap();
+        println!("id: {}, name: {}, value: {}", id, name, value);
     }
 
     Ok(())
