@@ -3,7 +3,9 @@ use neo4rs::*;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let uri = "bolt://127.0.0.1:17687";
-    let graph = Graph::new(uri).await?;
+    let username = "";  // Replace with actual username if needed
+    let password = "";  // Replace with actual password if needed
+    let graph = Graph::new(uri, username, password).await?;
 
     let mut result = graph.execute(query("RETURN 1+1")).await?;
     match result.next().await {
