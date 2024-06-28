@@ -4,8 +4,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let username = "neo4j";
     let password = "password";
     let graph = neo4rs::Graph::new(uri, username, password).await?;
+    let q = "RETURN 1+1";
 
-    let mut result = graph.execute(neo4rs::query("RETURN 1+1")).await?;
+    let mut result = graph.execute(neo4rs::query(q)).await?;
     match result.next().await {
         Ok(Some(row)) => {
             let value: i64 = row.get("1+1").unwrap();
