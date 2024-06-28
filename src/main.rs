@@ -1,6 +1,5 @@
-use neo4rs::{Graph, Node, Query, BoltType, BoltInteger, BoltString};
+use neo4rs::{Graph, Node, Query, BoltType, BoltInteger, BoltString, BoltMap};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct TestInput {
@@ -16,12 +15,12 @@ struct TestProps {
 
 impl From<TestInput> for BoltType {
     fn from(input: TestInput) -> Self {
-        let mut map = HashMap::new();
-        map.insert("id".to_string(), BoltType::Integer(BoltInteger::from(input.id)));
-        map.insert("props".to_string(), BoltType::Map({
-            let mut props_map = HashMap::new();
-            props_map.insert("name".to_string(), BoltType::String(BoltString::from(input.props.name)));
-            props_map.insert("value".to_string(), BoltType::Integer(BoltInteger::from(input.props.value)));
+        let mut map = BoltMap::new();
+        map.put("id", BoltType::Integer(BoltInteger::from(input.id)));
+        map.put("props", BoltType::Map({
+            let mut props_map = BoltMap::new();
+            props_map.put("name", BoltType::String(BoltString::from(input.props.name)));
+            props_map.put("value", BoltType::Integer(BoltInteger::from(input.props.value)));
             props_map
         }));
         BoltType::Map(map)
